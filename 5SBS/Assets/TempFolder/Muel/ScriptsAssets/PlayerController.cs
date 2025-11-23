@@ -31,8 +31,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        
         // Read input
         horizontalInput = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
+        Debug.Log(horizontalInput);
 
         // Notify GameManager when player starts moving and tick timer while moving
         if (Input.anyKeyDown && !IsMouseClick())
