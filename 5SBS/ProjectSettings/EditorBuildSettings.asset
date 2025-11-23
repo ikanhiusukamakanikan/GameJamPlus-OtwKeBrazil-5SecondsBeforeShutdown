@@ -11,5 +11,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TempFolder/Ichan/Scene/StageSelection.unity
     guid: 79493bceed7f08e4499b10b8f637707f
+  - enabled: 1
+    path: Assets/TempFolder/Muel/Stage1.unity
+    guid: 04da29d8688149742859e4170043ff0f
+  - enabled: 1
+    path: Assets/TempFolder/Muel/Stage2.unity
+    guid: 1499c500613f5e945a917ffc7987cbb8
+  - enabled: 0
+    path: Assets/TempFolder/Muel/Stage3.unity
+    guid: af061dc790d7e5a4a80fed5b7083cf80
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
