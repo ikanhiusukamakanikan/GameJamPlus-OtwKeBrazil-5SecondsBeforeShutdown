@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
         
         // Read input
         horizontalInput = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
-        Debug.Log(horizontalInput);
 
         // Notify GameManager when player starts moving and tick timer while moving
         if (Input.anyKeyDown && !IsMouseClick())
@@ -69,22 +68,38 @@ public class PlayerController : MonoBehaviour
     {
         if (groundCheck != null)
         {
-            return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
+            Vector2 size = new Vector2(groundCheckRadius * 8f, groundCheckRadius * 2f);
+            return Physics2D.OverlapBox(groundCheck.position, size, 0f, groundLayer) != null;
         }
 
-        // Fallback: check contacts with ground layer
         if (rb != null)
             return rb.IsTouchingLayers(groundLayer);
 
         return false;
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if (groundCheck != null)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+
+            Vector2 size = new Vector2(groundCheckRadius * 8f, groundCheckRadius * 0.5f);
+            Gizmos.DrawWireCube(groundCheck.position, size);
+        }
+    }
+
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Dead"))
+        {
+            Debug.Log("Player Dead Triggered");
+            GameManager.Instance.currentTime = GameManager.Instance.stageTime;
+            GameManager.Instance.UpdateTimerText();
+            GameManager.Instance.OnPlayerDeath(false);
+            GameManager.Instance.RespawnPlayer(true);
+            GameManager.Instance.ResetTimer();
         }
     }
 }

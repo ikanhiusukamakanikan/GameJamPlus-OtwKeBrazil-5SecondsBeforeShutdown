@@ -14,9 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Components")]
     public TransformHistory transformHistory;
-    public DoorHistory doorHistory;
     public ObjectManager objectManager;
-
     [Header("Timer")]
     public float stageTime = 5f;
     [HideInInspector] public float currentTime;
@@ -58,7 +56,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         AutoDetectDoors();
-        SetupDoorHistory();
 
         RespawnPlayer();
         ResetTimer();
@@ -83,22 +80,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Auto-detected {doors.Count} doors.");
     }
-
-    private void SetupDoorHistory()
-    {
-        if (doorHistory == null)
-        {
-            Debug.LogError("DoorHistory belum terpasang!");
-            return;
-        }
-
-        doorHistory.doors = doors;
-        doorHistory.openSprite = openDoorSprite;
-        doorHistory.closedSprite = closedDoorSprite;
-
-        doorHistory.SaveState(); // initial state
-    }
-
 
     // ===========================================================
     // TIMER
@@ -125,7 +106,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateTimerText()
+    public void UpdateTimerText()
     {
         int seconds = Mathf.FloorToInt(currentTime);
         int milliseconds = Mathf.FloorToInt((currentTime - seconds) * 100);
@@ -136,6 +117,7 @@ public class GameManager : MonoBehaviour
     public void ResetTimer()
     {
         currentTime = stageTime;
+        UpdateTimerText();
         hasPlayerStartedMoving = false;
     }
 
@@ -143,24 +125,25 @@ public class GameManager : MonoBehaviour
     // ===========================================================
     // PLAYER DEATH
     // ===========================================================
-    public void OnPlayerDeath()
+    public void OnPlayerDeath(bool create = true)
     {
         if (player == null) return;
-
-        transformHistory?.SaveLog();
+        if (create)
+            transformHistory?.SaveObjectLog();
 
         player.SetActive(false);
-
-        doorHistory?.SaveState();
     }
 
 
     // ===========================================================
     // PLAYER RESPAWN
     // ===========================================================
-    public void RespawnPlayer()
+    public void RespawnPlayer(bool undo = false)
     {
         if (player == null) return;
+
+        if (!undo)
+            transformHistory?.SaveLog();
 
         player.transform.position = playerSpawnPoint.position;
         player.SetActive(true);
@@ -183,9 +166,8 @@ public class GameManager : MonoBehaviour
     public void UndoLastAction()
     {
         transformHistory?.Undo();
-        doorHistory?.UndoState();
 
-        RespawnPlayer();
+        RespawnPlayer(true);
         ResetTimer();
     }
 
@@ -263,18 +245,4 @@ public class GameManager : MonoBehaviour
         else
             sr.sprite = closedDoorSprite;
     }
-
-    void ApplyDoorHistory(List<bool> doorStates)
-    {
-        for (int i = 0; i < doors.Count; i++)
-        {
-            Collider2D col = doors[i].GetComponent<Collider2D>();
-            col.enabled = doorStates[i];
-
-            // wajib update sprite!
-            UpdateDoorSprite(i);
-        }
-    }
-
-
 }
