@@ -50,6 +50,15 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
 
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            GameManager.Instance.currentTime = GameManager.Instance.stageTime;
+            GameManager.Instance.UpdateTimerText();
+            GameManager.Instance.OnPlayerDeath();
+            GameManager.Instance.RespawnPlayer();
+            GameManager.Instance.ResetTimer();
+        }
+
         // Flip sprite according to movement direction (optional)
         if (spriteRenderer != null)
         {
